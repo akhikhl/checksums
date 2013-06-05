@@ -1,0 +1,82 @@
+/**
+ * checksums.gradle
+ *
+ * Mass checksum calculation for files in the specified folder (recursive to subfolders).
+ *
+ * Written by Andrey Hihlovskiy (akhikhl AT gmail DOT com).
+ * Licensed under the MIT (http://opensource.org/licenses/MIT).
+ * Date: 05.06.2013
+ *
+ * @author Andrey Hihlovskiy
+ * @version 1.0.0
+ * @requires gradle 1.6 or later
+ *
+ * Get complete sources and documentation at:
+ *
+ * https://github.com/akhikhl/checksums
+ *
+ **/
+
+buildscript {
+  apply plugin: "maven"
+
+  repositories {
+    mavenLocal()
+    mavenCentral()
+  }
+
+  dependencies {
+    classpath "commons-codec:commons-codec:1.8"
+  }
+}
+
+import org.apache.commons.codec.digest.DigestUtils
+
+task "generateCheckSums" {
+  def sourceTree = fileTree(dir: projectDir, includes: ["**/*.xml", "**/*.jar", "**/*.pom"])
+  outputs.upToDateWhen {
+    !sourceTree.find {File file ->
+      File fileMd5 = new File(file.absolutePath + ".md5")
+      File fileSha1 = new File(file.absolutePath + ".sha1")
+      if(!fileMd5.exists() || !fileSha1.exists())
+        return true;
+      String checksum;
+      file.withInputStream { ins -> checksum = DigestUtils.md5Hex(ins) }
+      if(fileMd5.text != checksum)
+        return true;
+      file.withInputStream { ins -> checksum = DigestUtils.sha1Hex(ins) }
+      if(fileSha1.text != checksum)
+        return true;
+    }
+  }
+  doLast {
+    sourceTree.each {File file ->
+      File fileMd5 = new File(file.absolutePath + ".md5")
+      File fileSha1 = new File(file.absolutePath + ".sha1")
+      String checksum;
+      file.withInputStream { ins -> checksum = DigestUtils.md5Hex(ins) }
+      fileMd5.text = checksum
+      file.withInputStream { ins -> checksum = DigestUtils.sha1Hex(ins) }
+      fileSha1.text = checksum
+    }
+  }
+}
+
+task "cleanCheckSums" {
+  def sourceTree = fileTree(dir: projectDir, includes: ["**/*.xml", "**/*.jar", "**/*.pom"])
+  outputs.upToDateWhen {
+    !sourceTree.find {File file ->
+      new File(file.absolutePath + ".md5").exists() ||
+      new File(file.absolutePath + ".sha1").exists()
+    }
+  }
+  doLast {
+    sourceTree.each {File file ->
+      new File(file.absolutePath + ".md5").delete()
+      new File(file.absolutePath + ".sha1").delete()
+    }
+  }
+}
+
+defaultTasks "generateCheckSums"
+
