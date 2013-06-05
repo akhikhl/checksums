@@ -14,6 +14,8 @@ http://en.wikipedia.org/wiki/MD5
 
 https://en.wikipedia.org/wiki/Secure_Hash_Algorithm
 
+The script supports two tasks: generateChecksum and cleanChecksum.
+
 ##generateChecksums task
 
 ###Usage
@@ -26,9 +28,14 @@ or
 gradle generateChecksums -b checksums.gradle
 ```
 
-iterates the current folder (where "checksums.gradle" resides) and all it's subfolders,
+###Effect
+
+This task iterates the current folder (where "checksums.gradle" resides) and all it's subfolders,
 in each folder it iterates files with extensions "jar", "pom", "xml", for each found file
 it calculates MD5-checksum and SHA1-checksum and writes them to .md5 and .sha1 files.
+
+The script accurately calculates inputs/outputs. If all files are supplied with correct checksums,
+it does not overwrite any files and shows "UP-TO-DATE" in the console.
 
 ###Example
 
@@ -68,9 +75,14 @@ osgi2maven/maven-metadata.xml.sha1
 gradle cleanChecksums -b checksums.gradle
 ```
 
-iterates the current folder (where "checksums.gradle" resides) and all it's subfolders,
+###Effect
+
+Iterates the current folder (where "checksums.gradle" resides) and all it's subfolders,
 in each folder it iterates files with extensions "jar", "pom", "xml", for each found file
 it removes the corresponding .md5 and .sha1 files.
+
+The script accurately calculates inputs/outputs. If all checksum files were already removed,
+it does not remove any files and shows "UP-TO-DATE" in the console.
 
 ###Example
 
