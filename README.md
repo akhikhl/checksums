@@ -2,7 +2,7 @@
 
 ##Overview
 
-Mass checksum calculation for files in the specified folder (recursive to subfolders).
+Mass checksum (MD5 and SHA1) calculation for files in the specified folder (recursive to subfolders).
 
 This is gradle script. It is supposed to be run from command line.
 
@@ -18,11 +18,11 @@ https://en.wikipedia.org/wiki/Secure_Hash_Algorithm
 
 ###Usage
 
-```bash
+```shell
 gradle -b checksums.gradle
 ```
 or
-```bash
+```shell
 gradle generateChecksums -b checksums.gradle
 ```
 
@@ -64,7 +64,7 @@ osgi2maven/maven-metadata.xml.sha1
 
 ###Usage
 
-```bash
+```shell
 gradle cleanChecksums -b checksums.gradle
 ```
 
